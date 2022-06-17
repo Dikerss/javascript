@@ -186,6 +186,7 @@ let todoEdit, close_id, change_id, change_class, li_value
 let popupInput
 let popupAddBtn
 let popupCloseBtn
+let cookieBtn, cookieScreen
 
 const main = () => {
     prepareDOMElements()
@@ -204,6 +205,8 @@ const prepareDOMElements = () => {
     popupInput = document.querySelector('.popup-input')
     popupAddBtn = document.querySelector('.accept')
     popupCloseBtn = document.querySelector('.cancel')
+    cookieBtn = document.querySelector('.cookies_button_btn')
+    cookieScreen = document.querySelector('.cookies_screen')
 }
 
 const prepareDOMEvents = () => {
@@ -212,6 +215,14 @@ const prepareDOMEvents = () => {
     popupCloseBtn.addEventListener('click', closePopup)
     popupAddBtn.addEventListener('click', changeTodoText)
     todoInput.addEventListener('keyup', enterCheckKey)
+    cookieBtn.addEventListener('click', cookieButtonBtn)
+}
+
+const cookieButtonBtn = () => {
+    var date = new Date();
+    var accepted = 'accepted'
+    setCookie('cookie'+date.getTime(),encodeURIComponent(accepted))
+    cookieScreen.classList.remove("popup-animation");
 }
 
 const addNewTodo = () => {
@@ -230,11 +241,19 @@ const addNewTodo = () => {
 }
 
 const setCookie = (sName, sValue, sClass) => {
-    document.cookie = sName + '=' + escape(sValue) + '=' + escape(sClass);
-    var date = new Date();
-    date.setMonth(date.getYear()+1);
-    document.cookie += ('; max-age=31536000; SameSite=None; Secure; expires=' + date.toUTCString()); 
-    console.log(document.cookie)
+    if(sClass){
+        document.cookie = sName + '=' + escape(sValue) + '=' + escape(sClass);
+        var date = new Date();
+        date.setMonth(date.getYear()+1);
+        document.cookie += ('; max-age=31536000; SameSite=None; Secure; expires=' + date.toUTCString()); 
+        console.log(document.cookie)
+    }else{
+        document.cookie = sName + '=' + escape(sValue);
+        var date = new Date();
+        date.setMonth(date.getYear()+1);
+        document.cookie += ('; max-age=31536000; SameSite=None; Secure; expires=' + date.toUTCString()); 
+        console.log(document.cookie)
+    }
 }
 
 const unsetCookie = (sName) => {
@@ -248,6 +267,7 @@ const pageOnload = () => {
 
 const checkForObjectives = () => {
     var cookies = document.cookie.split('; ');
+    console.log(document.cookie)
     cookies.sort();
     for (var i=0; i < cookies.length; i++){
         var part = cookies[i].split('=');
@@ -259,6 +279,8 @@ const checkForObjectives = () => {
             catch(error){
                 console.log(error.message+' '+part[1]);
             }
+        }else if(part[0].indexOf('cookie')===0){
+            cookieScreen.classList.remove("popup-animation");
         }
     }
 }
